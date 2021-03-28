@@ -1,10 +1,16 @@
 require(`dotenv`).config({
   path: `.env`,
-})
+});
 
 module.exports = {
   siteMetadata: {
-    siteTitleAlt: `Minimal Blog - Gatsby Theme`,
+    siteTitle: `Lee Xiang Wei`,
+    siteTitleAlt: `Lee Xiang Wei's Blog`,
+    siteHeadline: `Lee Xiang Wei's Blog`,
+    siteUrl: `https://xwlee.github.io`,
+    siteDescription: `A blog of an software engineer`,
+    siteLanguage: `en`,
+    author: `@xwlee`,
   },
   plugins: [
     {
@@ -67,4 +73,4 @@ module.exports = {
     `gatsby-plugin-netlify`,
     // `gatsby-plugin-webpack-bundle-analyser-v2`,
   ],
-}
+};
