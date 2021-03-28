@@ -1,0 +1,57 @@
+---
+title: "Setup New Mac Mini M1"
+date: 2021-03-28
+tags:
+  - Mac Mini
+  - M1
+---
+
+Recently, I just brought a new Mac Mini with the M1 chip. Thought it would be nice to make a post about how to set up my development machine from the ground up.
+
+For the software compatibility, you can use this [website](https://isapplesiliconready.com/) to check.
+
+The first software to install for me always is `Homebrew`. Remember to `Homebrew` to your path.
+
+```shell
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Install `git` & `vim`
+
+```shell
+brew install git
+brew install vim
+```
+
+Install `Node.js` using `pkg` installer download from https://nodejs.org/en/download/
+
+> When I install via `Homebrew`, somehow I cannot run my `Node.js` scripts due to some error.
+
+Install `Docker for Mac (Apple M1 Tech Preview)`
+
+Download from https://docs.docker.com/docker-for-mac/apple-m1/
+
+Install other software
+
+```shell
+brew install --cask google-chrome
+brew install --cask iterm2
+brew install --cask alfred
+brew install --cask keka # File archiver
+brew install --cask vlc # Video player
+brew install --cask thunder # Downloader
+brew install --cask visual-studio-code
+brew install --cask adobe-acrobat-reader
+brew install --cask sequel-pro
+brew install --cask postman
+brew install --cask spotify
+brew install --cask appcleaner
+brew install --cask numi # Calculator
+brew install --cask notion
+brew install --cask mark-text # Markdown editor
+brew install --cask fliqlo # Screensavers
+brew install --cask firefox
+brew install --cask keepingyouawake # Utility the prevent Mac from entering sleep mode
+brew tap homebrew/cask-fonts
+brew install --cask font-source-code-pro # The programming font I use
+```
