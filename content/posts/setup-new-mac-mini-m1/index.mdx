@@ -6,32 +6,42 @@ tags:
   - M1
 ---
 
-Recently, I just brought a new Mac Mini with the M1 chip. Thought it would be nice to make a post about how to set up my development machine from the ground up.
+Recently, I just brought a new Mac Mini with the M1 chip. Thought it would be nice to make a post about how I set up my development machine from the ground up.
 
 For the software compatibility, you can use this [website](https://isapplesiliconready.com/) to check.
 
-The first software to install for me always is `Homebrew`. Remember to `Homebrew` to your path.
+## Install Homebrew
+
+The first software to install for me always is `Homebrew`.
 
 ```shell
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Install `git` & `vim`
+Append this to your `.zprofile` file
+
+```shell
+eval $(/opt/homebrew/bin/brew shellenv)
+```
+
+## Install `git` & `vim`
 
 ```shell
 brew install git
 brew install vim
 ```
 
-Install `Node.js` using `pkg` installer download from https://nodejs.org/en/download/
+## Install `Node.js`
 
 > When I install via `Homebrew`, somehow I cannot run my `Node.js` scripts due to some error.
 
-Install `Docker for Mac (Apple M1 Tech Preview)`
+I use the pkg installer download from https://nodejs.org/en/download/.
+
+## Install `Docker for Mac (Apple M1 Tech Preview)`
 
 Download from https://docs.docker.com/docker-for-mac/apple-m1/
 
-Install other software
+## Install other software
 
 ```shell
 brew install --cask google-chrome
@@ -55,3 +65,47 @@ brew install --cask keepingyouawake # Utility the prevent Mac from entering slee
 brew tap homebrew/cask-fonts
 brew install --cask font-source-code-pro # The programming font I use
 ```
+
+## Install prezto
+
+[Prezto](https://github.com/sorin-ionescu/prezto) is the configuration framework for Zsh shell
+
+It comes with modules and themes that allow you to customize your terminal.
+
+To install, run
+
+```shell
+git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
+```
+
+Copy the configuration files
+
+```shell
+setopt EXTENDED_GLOB
+for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
+  ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
+done
+```
+
+### Select a theme for you terminal
+
+To list all the available themes
+
+```shell
+prompt -1
+```
+
+To preview a theme
+
+```shell
+prompt -p <theme>
+```
+
+To set a theme
+
+```shell
+prompt -s <theme>
+```
+
+Example themes
+![themes](./themes.png)
