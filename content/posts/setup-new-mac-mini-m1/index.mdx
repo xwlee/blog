@@ -24,14 +24,14 @@ Append this to your `.zprofile` file
 eval $(/opt/homebrew/bin/brew shellenv)
 ```
 
-## Install `git` & `vim`
+## Install git & vim
 
 ```shell
 brew install git
 brew install vim
 ```
 
-## Install `Node.js`
+## Install Node.js
 
 > When I install via `Homebrew`, somehow I cannot run my `Node.js` scripts due to some error.
 
@@ -68,11 +68,11 @@ brew install --cask font-source-code-pro # The programming font I use
 
 ## Install prezto
 
-[Prezto](https://github.com/sorin-ionescu/prezto) is the configuration framework for Zsh shell.
+[prezto](https://github.com/sorin-ionescu/prezto) is the configuration framework for Zsh shell.
 
 It comes with modules and themes that allow you to customize your terminal.
 
-To install, run
+To install prezto, run
 
 ```shell
 git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"
@@ -87,7 +87,7 @@ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 done
 ```
 
-### Select a theme for you terminal
+### Select a theme for your terminal
 
 To list all the available themes
 
@@ -109,3 +109,31 @@ prompt -s <theme>
 
 Example themes
 ![themes](./themes.png)
+
+### Install a module for your terminal
+
+You can browse [here](https://github.com/sorin-ionescu/prezto/tree/master/modules) for the available modules
+
+To add a new module, open `~/.zpreztorc` and add the module to the following section
+
+```shell
+...
+zstyle ':prezto:load' pmodule \
+  'environment' \
+  'terminal' \
+  'editor' \
+  'history' \
+  'directory' \
+  'spectrum' \
+  'utility' \
+  'completion' \
+  'prompt' \
+  # Add new module here
+...
+```
+
+Then you need to reload `~/.zpreztorc`
+
+```shell
+source ~/.zpreztorc
+```
