@@ -18,17 +18,18 @@ The first software to install for me always is `Homebrew`.
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Append this to your `.zprofile` file
-
-```shell
-eval $(/opt/homebrew/bin/brew shellenv)
-```
-
 ## Install git & vim
 
 ```shell
 brew install git
 brew install vim
+```
+
+### Setup Git config
+
+```shell
+git config --global user.name "Lee Xiang Wei"
+git config --global user.email "xwlee2009@gmail.com"
 ```
 
 ## Install Node.js
@@ -87,6 +88,21 @@ for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md(.N); do
 done
 ```
 
+Append this to your `.zprofile` to make sure brew binary can be called when open new terminal.
+
+```shell
+eval $(/opt/homebrew/bin/brew shellenv)
+```
+
+Update `.zprofile` and change below section to `vim`
+
+```shell
+...
+export EDITOR='vim'
+export VISUAL='vim'
+...
+```
+
 ### Select a theme for your terminal
 
 To list all the available themes
@@ -136,4 +152,43 @@ Then you need to reload `~/.zpreztorc`
 
 ```shell
 source ~/.zpreztorc
+```
+
+## Install vundle, the plugin manager for vim
+
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+Add below code to the top of your `.vimrc`, these are the plugins I used. Feel free to change the plugin.
+
+```shell
+set nocompatible
+filetype off
+
+" Set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" Alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" Let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+Plugin 'altercation/Vim-colors-solarized'
+Plugin 'ervandew/supertab'
+Plugin 'kien/ctrlp.vim'
+Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+Plugin 'Raimondi/delimitMate'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'tpope/vim-surround'
+
+" All of your Plugins must be added before the following line
+call vundle#end()
+filetype plugin indent on
+```
+
+To install from command line, run
+
+```shell
+vim +PluginInstall +qall
 ```
