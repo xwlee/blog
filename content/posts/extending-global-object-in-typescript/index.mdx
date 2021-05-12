@@ -1,0 +1,48 @@
+---
+title: "Extending Global Object in TypeScript"
+date: 2021-05-12
+tags:
+  - NodeJS
+  - TypeScript
+  - global
+---
+
+To extends `global` object in `TypeScript`, you need to augment the `global` namespaces
+
+```js
+declare global {
+  namespace NodeJS {
+    interface Global {
+      myFunctionName: MyFunctionType
+    }
+  }
+}
+```
+
+Now you can call the function like this
+
+```js
+global.myFunctionName();
+```
+
+To call the function without `global.`
+
+```js {8-10}
+declare global {
+  namespace NodeJS {
+    interface Global {
+      myFunctionName: MyFunctionType
+    }
+  }
+
+  namespace globalThis {
+    const myFunctionName: MyFunctionType
+  }
+}
+```
+
+Now you can call the function like this
+
+```js
+myFunctionName();
+```
