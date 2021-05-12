@@ -1,11 +1,21 @@
 ---
-title: "Extending Global Object in TypeScript"
+title: "Extending TypeScript Global Object in NodeJS"
 date: 2021-05-12
 tags:
   - NodeJS
   - TypeScript
   - global
 ---
+
+You want to add a function to `global` object in `NodeJS` environment
+
+```js
+type MyFunctionType = () => void;
+
+global.myFunctionName = () => {
+  console.log("hi");
+};
+```
 
 To extends `global` object in `TypeScript`, you need to augment the `global` namespaces
 
@@ -19,13 +29,13 @@ declare global {
 }
 ```
 
-Now you can call the function like this
+With this in place, you now can call the function like this
 
 ```js
 global.myFunctionName();
 ```
 
-To call the function without `global.`
+To call the function without `global.`, you need to augment the `globalThis` type
 
 ```js {8-10}
 declare global {
@@ -41,8 +51,10 @@ declare global {
 }
 ```
 
-Now you can call the function like this
+With this in place, you now can call the function like this
 
 ```js
 myFunctionName();
 ```
+
+That's it. Thanks for reading.
