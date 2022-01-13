@@ -1,0 +1,96 @@
+---
+title: "Setup an ELK stack using AWS CDK"
+date: 2022-01-13
+tags:
+  - AWS
+  - CDK
+  - TypeScript
+  - Elasticsearch
+canonicalUrl: https://xwlee.github.io/setup-an-elk-stack-using-cdk
+---
+
+## Setup an ELK stack using AWS CDK
+
+### Prerequisites
+
+Make sure you have installed `Node.js` 10.13.0 or later.
+
+Make sure you have configured your workstation with your `aws_access_key_id` & `aws_secret_access_key`. If you have the `AWS CLI` installed, run the following command.
+
+```bash
+# Provide your AWS access key ID, secret access key, and default region when prompted.
+aws configure
+```
+
+Make sure you have installed the AWS CDK Toolkit globally.
+
+```bash
+npm install -g aws-cdk
+cdk --version
+```
+
+### Initial Setup
+
+In this tutorial, we will use `TypeScript` for the demo.
+
+Let's initialize an empty AWS CDK project.
+
+```bash
+mkdir cdk-elk && cd $_
+cdk init app --language typescript
+```
+
+Run the following command to verify that everything works correctly.
+
+```bash
+npm run cdk synth
+```
+
+This will output an empty CloudFormation template inside `cdk.out` folder. You should see a file named `CdkElkStack.template.json` created.
+
+### Boostraping
+
+Provision resources the AWS CDK needs to perform the deployment, e.g S3 bucket
+
+```bash
+$ cdk bootstrap
+ ⏳  Bootstrapping environment aws://111111111111/ap-southeast-1...
+Trusted accounts for deployment: (none)
+Trusted accounts for lookup: (none)
+Using default execution policy of 'arn:aws:iam::aws:policy/AdministratorAccess'. Pass '--cloudformation-execution-policies' to customize.
+ ✅  Environment aws://111111111111/ap-southeast-1 bootstrapped (no changes).
+```
+
+### Create a AWS Cognito User Pool
+
+Add an import statement at the beginning of `lib/cdk-elk-stack.ts`
+
+```js {3,9-25}
+import { Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import * as cognito from "aws-cdk-lib/aws-cognito";
+
+export class CdkElkStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const userPool = new cognito.UserPool(this, "UserPool", {
+      userPoolName: `${Stack.of(this).stackName}UserPool`,
+      autoVerify: {
+        email: true,
+      },
+      standardAttributes: {
+        email: {
+          mutable: true,
+          required: true,
+        },
+      },
+    });
+    userPool.addDomain("UserPoolDomain", {
+      cognitoDomain: {
+        domainPrefix: "cdk-elk",
+      },
+    });
+  }
+}
+```
