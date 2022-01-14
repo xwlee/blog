@@ -2,16 +2,14 @@
 title: "Setup an ELK stack using AWS CDK"
 date: 2022-01-13
 tags:
-  - AWS
-  - CDK
-  - TypeScript
-  - Elasticsearch
+  - aws
+  - awscdk
+  - typescript
+  - elasticsearch
 canonicalUrl: https://xwlee.github.io/setup-an-elk-stack-using-cdk
 ---
 
-## Setup an ELK stack using AWS CDK
-
-### Prerequisites
+## Prerequisites
 
 Make sure you have installed `Node.js` 10.13.0 or later.
 
@@ -29,7 +27,7 @@ npm install -g aws-cdk
 cdk --version
 ```
 
-### Initial Setup
+## Initial Setup
 
 In this tutorial, we will use `TypeScript` for the demo.
 
@@ -48,7 +46,7 @@ npm run cdk synth
 
 This will output an empty CloudFormation template inside `cdk.out` folder. You should see a file named `CdkElkStack.template.json` created.
 
-### Boostraping
+## Boostraping
 
 Provision resources the AWS CDK needs to perform the deployment, e.g S3 bucket
 
@@ -61,7 +59,7 @@ Using default execution policy of 'arn:aws:iam::aws:policy/AdministratorAccess'.
  ✅  Environment aws://111111111111/ap-southeast-1 bootstrapped (no changes).
 ```
 
-### Create a AWS Cognito User Pool
+## Create a AWS Cognito User Pool
 
 Add an import statement at the beginning of `lib/cdk-elk-stack.ts`
 
@@ -94,3 +92,61 @@ export class CdkElkStack extends Stack {
   }
 }
 ```
+
+A user pool is a user directory that stores your users that use to login to Kibana. We also need to specify the domain prefix for the Cognito login URL.
+
+## Create a AWS Cognito Identity Pool
+
+Note: Here we omit the code to create user pool
+
+```js {11-41}
+import { Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import * as cognito from "aws-cdk-lib/aws-cognito";
+
+export class CdkElkStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    // User pool ...
+
+    const identityPool = new cognito.CfnIdentityPool(this, "IdentityPool", {
+      identityPoolName: `${Stack.of(this).stackName}IdentityPool`,
+      allowUnauthenticatedIdentities: false,
+    });
+
+    // See https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html
+    const authenticatedRole = new iam.Role(this, "AuthenticatedRole", {
+      assumedBy: new iam.FederatedPrincipal(
+        "cognito-identity.amazonaws.com",
+        {
+          StringEquals: {
+            "cognito-identity.amazonaws.com:aud": identityPool.ref,
+          },
+          "ForAnyValue:StringLike": {
+            "cognito-identity.amazonaws.com:amr": "authenticated",
+          },
+        },
+        "sts:AssumeRoleWithWebIdentity"
+      ),
+    });
+
+    new cognito.CfnIdentityPoolRoleAttachment(
+      this,
+      "IdentityPoolRoleAttachment",
+      {
+        identityPoolId: identityPool.ref,
+        roles: {
+          authenticated: authenticatedRole.roleArn,
+        },
+      }
+    );
+  }
+}
+```
+
+A few things to notice:
+
+- Identity pool creates unique identities for the authenticated user and attaches a role to that user.
+- The role defines the permissions to access the AWS resources.
+- Both user pool & identity pool will be used when we define the ES domain.
