@@ -51,7 +51,7 @@ This will output an empty CloudFormation template inside `cdk.out` folder. You s
 Provision resources the AWS CDK needs to perform the deployment, e.g S3 bucket
 
 ```bash
-$ cdk bootstrap
+cdk bootstrap
  ⏳  Bootstrapping environment aws://111111111111/ap-southeast-1...
 Trusted accounts for deployment: (none)
 Trusted accounts for lookup: (none)
@@ -97,7 +97,7 @@ A user pool is a user directory that stores your users that use to login to Kiba
 
 ## Create a AWS Cognito Identity Pool
 
-Note: Here we omit the code to create user pool
+Note: Here we omitted the code to create user pool
 
 ```js {11-41}
 import { Stack, StackProps } from "aws-cdk-lib";
@@ -152,6 +152,8 @@ A few things to notice:
 - Both user pool & identity pool will be used when we define the ES domain.
 
 ## Create an ES domain
+
+Note: Here we omitted the code to create user pool & identity pool
 
 ```js {4-7,17-57}
 import { Stack, StackProps } from "aws-cdk-lib";
@@ -214,3 +216,18 @@ export class CdkElkStack extends Stack {
   }
 }
 ```
+
+What's going on here?
+
+- We declared an `IAM` role that allows Amazon ES to configure Cognito authentication for Kibana.
+- We defined an ES domain with the access policies that allow the authenticated role we created previously to access it.
+
+## Deploy the stack
+
+```bash
+cdk deploy
+```
+
+## Source code
+
+You can get the source code here -> https://github.com/xwlee/cdk-elk
