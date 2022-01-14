@@ -39,6 +39,10 @@ module.exports = {
             name: `Instagram`,
             url: `https://www.instagram.com/xiangwei.lee/`,
           },
+          {
+            name: `Stackoverflow`,
+            url: `https://stackoverflow.com/users/846053/xwlee`,
+          },
         ],
       },
     },
