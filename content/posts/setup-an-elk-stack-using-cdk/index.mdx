@@ -59,7 +59,7 @@ Using default execution policy of 'arn:aws:iam::aws:policy/AdministratorAccess'.
  ✅  Environment aws://111111111111/ap-southeast-1 bootstrapped (no changes).
 ```
 
-## Create a AWS Cognito User Pool
+## Create an AWS Cognito User Pool
 
 Add an import statement at the beginning of `lib/cdk-elk-stack.ts`
 
@@ -95,7 +95,7 @@ export class CdkElkStack extends Stack {
 
 A user pool is a user directory that stores your users that use to login to Kibana. We also need to specify the domain prefix for the Cognito login URL.
 
-## Create a AWS Cognito Identity Pool
+## Create an AWS Cognito Identity Pool
 
 Note: Here we omitted the code to create user pool
 
@@ -230,4 +230,4 @@ cdk deploy
 
 ## Source code
 
-You can get the source code here -> https://github.com/xwlee/cdk-elk
+https://github.com/xwlee/cdk-elk
