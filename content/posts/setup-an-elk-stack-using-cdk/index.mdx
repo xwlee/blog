@@ -155,8 +155,8 @@ A few things to notice:
 
 Note: Here we omitted the code to create user pool & identity pool
 
-```js {4-7,17-57}
-import { Stack, StackProps } from "aws-cdk-lib";
+```js {1,4-7,17-62}
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as cognito from "aws-cdk-lib/aws-cognito";
 import * as iam from "aws-cdk-lib/aws-iam";
@@ -213,6 +213,11 @@ export class CdkElkStack extends Stack {
         role: esRole,
       },
     });
+
+    new CfnOutput(this, "ESKibanaUrl", {
+      description: "Elastic Search Kibana Endpoint.",
+      value: `https://${domain.domainEndpoint}/_plugin/kibana/`,
+    });
   }
 }
 ```
@@ -221,12 +226,41 @@ What's going on here?
 
 - We declared an `IAM` role that allows Amazon ES to configure Cognito authentication for Kibana.
 - We defined an ES domain with the access policies that allow the authenticated role we created previously to access it.
+- We output the Kibana URL after the domain is created.
 
 ## Deploy the stack
 
 ```bash
 cdk deploy
+This deployment will make potentially sensitive changes according to your current security approval level (--require-approval broadening).
+Please confirm you intend to make the following modifications:
+
+...
+
+Do you wish to deploy these changes (y/n)? y
+CdkElkStack: deploying...
+[0%] start: Publishing 70893b631249dc61260989e92e90d60ae94fbbec490a1e065680d77383084d8d:current_account-current_region
+[50%] success: Published 70893b631249dc61260989e92e90d60ae94fbbec490a1e065680d77383084d8d:current_account-current_region
+[50%] start: Publishing a1c436cf86403b1a2ba523b01c377b6cc24eddd60e78b76c9a24e5b28b071fd8:current_account-current_region
+[100%] success: Published a1c436cf86403b1a2ba523b01c377b6cc24eddd60e78b76c9a24e5b28b071fd8:current_account-current_region
+CdkElkStack: creating CloudFormation changeset...
+ ✅  CdkElkStack
+
+Outputs:
+CdkElkStack.ESKibanaUrl = https://search-cdk-elk-ez34nbicxu5vu7abr7xz5sggiu.ap-southeast-1.es.amazonaws.com/_plugin/kibana/
+
+Stack ARN:
+arn:aws:cloudformation:ap-southeast-1:734282799255:stack/CdkElkStack/12327f80-7aa3-11ec-a781-0631acf18570
 ```
+
+## Create an User in User Pool to access Kibana
+
+![user-pool-users](./user-pool-users.png)
+![user-pool-create-user](./user-pool-create-user.png)
+![cognito-signin](./cognito-signin.png)
+![change-temp-password](./change-temp-password.png)
+![cognito-signin-as](./cognito-signin-as.png)
+![kibana](./kibana.png)
 
 ## Source code
 
