@@ -256,19 +256,18 @@ arn:aws:cloudformation:ap-southeast-1:734282799255:stack/CdkElkStack/12327f80-7a
 ## Create an User in User Pool to access Kibana
 
 Go to [AWS Cognito console](https://console.aws.amazon.com/cognito/home) to create a user to signin to Kibna.
+Click the **Create User** button in the **Users** tab of the **Users and groups** tab.
 
 ![user-pool-users](./user-pool-users.png)
 
-Click the **Create User** button in the **Users** tab of the **Users and groups** tab.
+Fill in the **Username**, **Temporary password**, and **Email**. Check **Mark email as verified?** and hit the **Create User** button to create the user.
 
 ![user-pool-create-user](./user-pool-create-user.png)
 
-Fill in the **Username**, **Temporary password**, and **Email**. Check **Mark email as verified?** and hit the **Create User** button.
+Go to the link display after the stack is created successfully to login to Kibana.
+When you log in for the first time, you will be prompted to change the temporary password.
 
 ![cognito-signin](./cognito-signin.png)
-
-When you log in for the first time. you will be prompted to change the temporary password.
-
 ![change-temp-password](./change-temp-password.png)
 
 Once you have reset the password, log in with the new password.
