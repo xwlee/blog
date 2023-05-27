@@ -1,20 +1,23 @@
-require(`dotenv`).config();
+import type { GatsbyConfig, PluginRef } from "gatsby";
+import "dotenv/config";
 
 const shouldAnalyseBundle = process.env.ANALYSE_BUNDLE;
 
-module.exports = {
+const config: GatsbyConfig = {
   siteMetadata: {
     // You can overwrite values here that are used for the SEO component
     // You can also add new values here to query them like usual
-    // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.js
+    // See all options: https://github.com/LekoArts/gatsby-themes/blob/main/themes/gatsby-theme-minimal-blog/gatsby-config.mjs
     siteTitle: `Lee Xiang Wei`,
     siteTitleAlt: `Lee Xiang Wei's Blog`,
     siteHeadline: `Lee Xiang Wei's Blog`,
     siteUrl: `https://xwlee.github.io`,
-    siteDescription: `A blog of an software engineer`,
+    siteDescription: `A blog of an software engineer.`,
+    siteImage: `/banner.jpg`,
     siteLanguage: `en`,
     author: `@xwlee`,
   },
+  trailingSlash: `never`,
   plugins: [
     {
       resolve: `@lekoarts/gatsby-theme-minimal-blog`,
@@ -47,41 +50,41 @@ module.exports = {
       },
     },
     {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: process.env.GOOGLE_ANALYTICS_ID,
-      },
-    },
-    {
       resolve: `gatsby-plugin-disqus`,
       options: {
         shortname: `https-xwlee-github-io`,
       },
     },
     {
-      resolve: `gatsby-omni-font-loader`,
+      resolve: `gatsby-plugin-google-gtag`,
       options: {
-        enableListener: true,
-        preconnect: [`https://fonts.gstatic.com`],
-        interval: 300,
-        timeout: 30000,
-        // If you plan on changing the font you'll also need to adjust the Theme UI config to edit the CSS
-        // See: https://github.com/LekoArts/gatsby-themes/tree/main/examples/minimal-blog#changing-your-fonts
-        web: [
-          {
-            name: `IBM Plex Sans`,
-            file: `https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap`,
-          },
+        // You can add multiple tracking ids and a pageview event will be fired for all of them.
+        trackingIds: [
+          process.env.GA_MEASUREMENT_ID, // Google Analytics / GA
         ],
+        // This object is used for configuration specific to this plugin
+        pluginConfig: {
+          // Puts tracking script in the head instead of the body
+          head: true,
+          // Setting this parameter is also optional
+          respectDNT: true,
+          // Avoids sending pageview hits from custom paths
+          exclude: ["/preview/**", "/do-not-track/me/too/"],
+        },
       },
     },
-    `gatsby-plugin-sitemap`,
+    {
+      resolve: `gatsby-plugin-sitemap`,
+      options: {
+        output: `/`,
+      },
+    },
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `minimal-blog - @lekoarts/gatsby-theme-minimal-blog`,
-        short_name: `minimal-blog`,
-        description: `Typography driven, feature-rich blogging theme with minimal aesthetics. Includes tags/categories support and extensive features for code blocks such as live preview, line numbers, and code highlighting.`,
+        name: `Lee Xiang Wei's Blog`,
+        short_name: `xwlee-blog`,
+        description: `A blog of an software engineer.`,
         start_url: `/`,
         background_color: `#fff`,
         // This will impact how browsers show your PWA/website
@@ -119,7 +122,14 @@ module.exports = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allPost } }) =>
+            serialize: ({
+              query: { site, allPost },
+            }: {
+              query: {
+                allPost: IAllPost;
+                site: { siteMetadata: ISiteMetadata };
+              };
+            }) =>
               allPost.nodes.map((post) => {
                 const url = site.siteMetadata.siteUrl + post.slug;
                 const content = `<p>${post.excerpt}</p><div style="margin-top: 50px; font-style: italic;"><strong><a href="${url}">Keep reading</a>.</strong></div><br /> <br />`;
@@ -133,32 +143,67 @@ module.exports = {
                   custom_elements: [{ "content:encoded": content }],
                 };
               }),
-            query: `
-              {
-                allPost(sort: { fields: date, order: DESC }) {
-                  nodes {
-                    title
-                    date(formatString: "MMMM D, YYYY")
-                    excerpt
-                    slug
-                  }
-                }
-              }
-            `,
+            query: `{
+  allPost(sort: {date: DESC}) {
+    nodes {
+      title
+      date(formatString: "MMMM D, YYYY")
+      excerpt
+      slug
+    }
+  }
+}`,
             output: `rss.xml`,
-            title: `Minimal Blog - @lekoarts/gatsby-theme-minimal-blog`,
+            title: `Lee Xiang Wei's Blog`,
           },
         ],
       },
     },
-    `gatsby-plugin-gatsby-cloud`,
+    // You can remove this plugin if you don't need it
     shouldAnalyseBundle && {
-      resolve: `gatsby-plugin-webpack-bundle-analyser-v2`,
+      resolve: `gatsby-plugin-webpack-statoscope`,
       options: {
-        analyzerMode: `static`,
-        reportFilename: `_bundle.html`,
-        openAnalyzer: false,
+        saveReportTo: `${__dirname}/public/.statoscope/_bundle.html`,
+        saveStatsTo: `${__dirname}/public/.statoscope/_stats.json`,
+        open: false,
       },
     },
-  ].filter(Boolean),
+  ].filter(Boolean) as Array<PluginRef>,
 };
+
+export default config;
+
+interface IPostTag {
+  name: string;
+  slug: string;
+}
+
+interface IPost {
+  slug: string;
+  title: string;
+  defer: boolean;
+  date: string;
+  excerpt: string;
+  contentFilePath: string;
+  html: string;
+  timeToRead: number;
+  wordCount: number;
+  tags: Array<IPostTag>;
+  banner: any;
+  description: string;
+  canonicalUrl: string;
+}
+
+interface IAllPost {
+  nodes: Array<IPost>;
+}
+
+interface ISiteMetadata {
+  siteTitle: string;
+  siteTitleAlt: string;
+  siteHeadline: string;
+  siteUrl: string;
+  siteDescription: string;
+  siteImage: string;
+  author: string;
+}
