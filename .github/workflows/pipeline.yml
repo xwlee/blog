@@ -1,0 +1,23 @@
+name: Deploy Blog
+
+on:
+  push:
+    branches: [master]
+
+env:
+  GH_TOKEN: ${{secrets.GH_TOKEN}}
+  GATSBY_DISQUS_NAME: ${{secrets.GATSBY_DISQUS_NAME}}
+  GA_MEASUREMENT_ID: ${{secrets.GA_MEASUREMENT_ID}}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - run: git config --global user.email "688247+xwlee@users.noreply.github.com"
+      - run: git config --global user.name "Lee Xiang Wei"
+      - run: npm install -g gatsby-cli
+      - run: npm install && npm run deploy
