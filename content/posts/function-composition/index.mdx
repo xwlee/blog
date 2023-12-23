@@ -1,0 +1,100 @@
+---
+title: "Function Composition"
+date: 2023-12-23
+tags:
+  - javascript
+  - functional-programming
+
+canonicalUrl: https://xwlee.github.io/function-composition
+---
+
+## Method 1
+
+Uses a loop and eagerly (aka, immediately) calculates the result of one call to pass into the next call.
+
+```js
+function compose(...fns) {
+  return function composed(result) {
+    // Copy the array of functions
+    var list = [...fns];
+
+    while (list.length > 0) {
+      // Take the last function off the end of the list
+      // and execute it
+      result = list.pop()(result);
+    }
+
+    return result;
+  };
+}
+```
+
+## Method 2
+
+Using `reduce(..)`.
+
+```js
+function compose(...fns) {
+  return function composed(result) {
+    return [...fns].reverse().reduce(function reducer(result, fn) {
+      return fn(result);
+    }, result);
+  };
+}
+```
+
+## Method 3
+
+Still use `reduce(..)`, but produce a lazy evaluation function wrapping. We return the result of the `reduce(..)` call directly, which is itself a function, not a computed result.
+
+```js
+function compose(...fns) {
+  return fns.reverse().reduce(function reducer(fn1, fn2) {
+    return function composed(...args) {
+      return fn2(fn1(...args));
+    };
+  });
+}
+```
+
+The produced wrapped function was similar to the one composed manually below:
+
+```js
+// Here we compose 4 functions manually.
+
+// The first function can accept multiple argument
+var fn1 = (...arg) => {
+  console.log("fn1", arg);
+  return arg;
+};
+
+// Add 2 to each number
+var fn2 = (arg) => {
+  console.log("fn2", arg);
+  return arg.map((x) => x + x);
+};
+
+// Multiply each number by 2
+var fn3 = (arg) => {
+  console.log("fn3", arg);
+  return arg.map((x) => x * x);
+};
+
+var fn4 = (arg) => {
+  console.log("fn4", arg);
+  return arg;
+};
+
+var myFn = function composed(...args) {
+  return fn4(
+    (function composed(...args) {
+      return fn3(
+        (function composed(...args) {
+          return fn2(fn1(...args));
+        })(...args)
+      );
+    })(...args)
+  );
+};
+myFn(1, 2, 3); // [4, 16, 36]
+```
